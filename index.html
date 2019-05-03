@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>task_3</title>
+	<script  src="jQuery.js"></script>
+	<link rel="stylesheet" href="bootstrap.css">
+</head>
+<body>
+	<div class="container">
+		<div class="row" id="containerTab">
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+			<div class="col-3 tabs">
+				<div class="col-12 tab"></div>
+			</div>
+		</div>
+		<div class="container" onload="init()">
+			<div id="timer">00:00:00.000</div>
+			<button class="button_start" id="start">
+				Старт
+			</button>
+			
+		</div>
+	</div>
+<script>
+	Array.prototype.randMass = function(b) // функция рандомизирования массива
+	{
+		let i = this.length, j, t; 
+		while(i) {
+			j = Math.floor((i--) * Math.random()); //присваиваем j рандомный index
+			t = this[i]; //сохраняем порядковый элемент
+			this[i] = this[j]; // присваиваем рандомный
+			this[j] = t; // присваиваем рандомному порядковый
+		}
+		return this;
+	};
+	//объявляем переменные
+   let clocktimer, dateObj, readout = '', init = false, milisec = '00', sec = '00', minutes = '00', hours = '00', timeSec, flag = true;
+   //функция для старта секундомера
+   function timeStart() { 
+	let cdateObj = new Date(); // при вызове функции создаем новый объект даты для вычислений
+	let t = (cdateObj.getTime() - dateObj.getTime()) + ''; // ищем разность в милисекундах
+	if (t.length > 3) { // если прошло больше секунды
+		timeSec = +t.substr(0, t.length-3); // число секунл
+		milisec = t[t.length-3] + t[t.length-2] + t[t.length-1]; // милисекунды xxxx[x][x][x]
+		sec = !t.substr(0, t.length-3) ? 0 : timeSec % 60; // ищем секунды для отображения
+		sec = !parseInt(sec/10) ? "0" + sec : sec; // если 1 символ то дописываем 0 к кол-ву секунд
+		if (timeSec > 59) { // если прошло больше минуты
+			minutes = parseInt(timeSec / 60) % 60; // ищем минуты для отображения
+			minutes = !parseInt(minutes/10) ? "0" + minutes : minutes; //если 1 символ то дописываем 0 к кол-ву минут
+		}// аналогично для числа часов
+		if (+timeSec > 3599) {
+			hours = timeSec / 3600;
+			hours = !parseInt(hours/10) ? "0" + hours : hours;
+		}
+	} else { // если не прошло секунды, то отображаем разность
+		milisec = t;
+	}
+	readout = hours + ':' + minutes + ':' + sec + '.' + milisec;
+	timer.innerHTML = readout;
+	clocktimer = setTimeout(timeStart, 1); // вызываем фукцию через 1 милисекунду
+   } 
+   function clearTimer() {
+   		milisec = '00', sec = '00', minutes = '00', hours = '00';
+   		timer.innerHTML = readout;
+   }
+   //Функция запуска и остановки
+   function startStop() { 
+	if (!init) {
+		clearTimer();
+		dateObj = new Date(); //создаем начальную даты для отсчета
+		timeStart();
+		init = !init; 
+	} else { 
+		clearTimeout(clocktimer); // удалем таймер
+		init = !init;
+	} 
+   } 
+	let massHex = ['#FF0000', 
+				'#00FF00', 
+				'#C71585', 
+				'#008080',
+				'#FFA500', 
+				'#4B0082', 
+				'#8B4513', 
+				'#FFFF00'];
+	let inc = 8, massElem = [],
+		incs = 16; 
+	$(document).ready(function(){
+		while (inc--) { // добавляем цвета и id элементам
+			$($('.tab')[inc]).attr('data-color', massHex[inc]);
+			$($('.tab')[inc + 8]).attr('data-color', massHex[inc]);
+			$($('.tab')[inc]).attr('id', 'tab_'+inc);
+			$($('.tab')[inc + 8]).attr('id', 'tab_' + inc + 8);
+		}
+		$('.tabs').each(function(index, element){ // заполняем массив элементами
+			massElem.push(element);
+		})
+		$('#containerTab').html(massElem.randMass()); // перемешиваем массив
+		$('#start').click(function(event){
+			event.preventDefault();
+			if (flag) {
+				$('.tab').click(function() {
+					$(this).css('background-color', $(this).attr('data-color')); // окрашиваем элемент
+					if ($('.active_color').length === 1) {// если только один элемент то проверяем равенство данного с активным элементом
+						if ($('.active_color').attr('data-color') === $(this).attr('data-color') && $(this).attr('id') != $('.active_color').attr('id')) {
+							$(this).addClass('color_final'); 
+							$(this).unbind('click');
+							$($('.active_color')[0]).addClass('color_final');
+							$($('.active_color')[0]).unbind('click');
+							$($('.active_color')[0]).removeClass('active_color');
+							$(this).css('background-color', $(this).attr('data-color'));
+							if ($('.color_final').length == 16) { //если найденных элементов 16 то выводим результат
+								setTimeout(function(){
+									alert('Вы выйграли!\nЗатраченное время:' + $('#timer').text());
+									$('#start').trigger('click');	
+								}, 10)
+							}
+							return;
+						}
+					};
+					if ($('.active_color').length === 2) { // если оба ложных, то окрашиваем в белый
+						if ($($('.active_color')[0]).attr('data-color') !== $($('.active_color')[1]).attr('data-color')) {
+							$('.active_color').css('background-color', '#FFFFFF')
+							$('.active_color').removeClass('active_color');						
+						}
+					}
+					$(this).addClass('active_color');					
+				})
+				flag = !flag;
+			} else	{ // обнуляем все элементы и удаляем события на блоках
+				$('.active_color').css('background-color', '#FFFFFF');
+				$('.color_final').css('background-color', '#FFFFFF');
+				$('.color_final').removeClass('color_final');
+				$('.active_color').removeClass('active_color');
+				$('.tab').unbind('click');
+				flag = !flag;
+			}
+			startStop();
+			let text = $(this).text() == 'Стоп' ? 'Старт' : 'Стоп';
+			$(this).text(text);
+		})		
+	})
+	
+	
+</script>
+
+<style>
+	.color_final {
+		opacity: 0.4;
+	}
+	.button_start {
+		background-color: #e7e7e7;
+		margin:40px 0px;
+	}
+	.row {
+		margin-top: 60px;
+	}
+	.tab {
+		border: 1px solid black;
+		height: 10vw;
+		background-color: white;
+		margin-top: 30px;
+	}
+</style>
+</body>
+</html>
